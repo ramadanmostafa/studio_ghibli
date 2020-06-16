@@ -1,0 +1,58 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:11
+    ports:
+      - 127.0.0.1:8082:5432
+    env_file: ./studio_ghibli/.env
+    volumes:
+      - ./provision/db-initialize.sql:/docker-entrypoint-initdb.d/1.sql
+      - ./provision/postgres-data:/var/lib/postgresql/data
+  web:
+    build: .
+    command: >
+      /bin/bash -c "
+        ./wait-for-dependencies.sh db 5432;
+        python manage.py migrate;
+        python manage.py runserver 0.0.0.0:8000;
+      "
+    env_file: ./studio_ghibli/.env
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+  redis:
+    image: "redis:alpine"
+  task_trigger:
+    build: .
+    command: >
+      /bin/bash -c "
+        ./wait-for-dependencies.sh db 5432;
+        python manage.py sync_movies_data;
+      "
+    env_file: ./studio_ghibli/.env
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+      - web
+      - redis
+      - celery_worker
+  celery_worker:
+    build: .
+    command: >
+      /bin/bash -c "
+        ./wait-for-dependencies.sh db 5432;
+        celery -A studio_ghibli worker --loglevel=info
+      "
+    env_file: ./studio_ghibli/.env
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+      - web
+      - redis

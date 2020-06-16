@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>STUDIO GHIBLI MOVIES</title>
+</head>
+<body>
+<h1>STUDIO GHIBLI MOVIES:</h1>
+
+<ul>
+{% for movie in movies %}
+    <li>
+        <strong>Title: </strong> <a href="{{ BASE_URL}}{{ FILMS_API_URL }}/{{ movie.external_id }}"> {{ movie.title }} </a> <br/>
+        <strong>Description: </strong>{{ movie.description }} <br/>
+        <strong>Director: </strong>{{ movie.director }} -
+        <strong>Producer: </strong>{{ movie.producer }} -
+        <strong>Release Date: </strong>{{ movie.release_date }} -
+        <strong>RT-Score: </strong>{{ movie.rt_score }}
+
+        {% if movie.people.all %}<h4>PEOPLE: </h4> {% endif %}
+        <ul>
+            {% for person in movie.people.all %}
+                <li>
+                  <strong>Name: </strong><a href="{{ BASE_URL}}{{ PEOPLE_API_URL }}/{{ person.external_id }}"> {{ person.name }} </a> -
+                    <strong>Gender: </strong>{{ person.gender }} <br/>
+                  <strong>Age: </strong>{{ person.age }} -
+                    <strong>Eye Color: </strong>{{ person.eye_color }} -
+                    <strong>Hair Color: </strong>{{ person.hair_color }} <br/>
+                </li> <br/>
+            {% endfor %}
+        </ul>
+    </li>
+    <hr>
+{% endfor %}
+</ul>
+</body>
+</html>

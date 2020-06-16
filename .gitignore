@@ -1,0 +1,28 @@
+# Byte-compiled / optimized / DLL files
+**/__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+env/
+.python-version
+
+# Translations
+*.pot
+
+# Django stuff:
+*.log
+
+# dotenv
+.env
+.DS_Store
+
+#editors
+**/.vscode
+**/.idea
+
+#jupyter
+*.ipynb
+
+provision/postgres-data/*
